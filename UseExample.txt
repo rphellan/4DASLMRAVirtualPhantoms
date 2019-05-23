@@ -1,0 +1,44 @@
+This is an example of how to use the code to generate 4D ASL MRA phantoms.
+
+!!!First, make sure you set the environment variable:
+export NEWIFT_DIR="[Your_Path]/IFTVessel"
+
+*Make sure you compile all programs in IFTVessel/src/FormatChange and IFTVessel/src/VesselAnalysis:
+
+cd IFTVessel/src/FormatChange
+make iftAnalyze2Scn
+make iftScn2Analyze
+
+cd IFTVessel/src/VesselAnalysis
+make iftCountBranching
+make iftIsolateVessels
+
+1) Compile the program in the bin directory.
+cd bin
+cmake ../src
+make
+
+2) Compute the skeleton of a binary segmentation of the vascular system.
+
+./ComputeSkeleton -i ../data/binaryVascularSystem.nii -o skeleton.nii
+
+3) Visualize the skeleton in your favorite image viewer and write down the coordinates (x, y, z) where the LICA, RICA, and BA arteries start.
+
+4) Use the SeparateVesselRegions program to compute:
+  4.1) Coloured binary segmentation for 3 vessel regions (sep.nii).
+  4.2) Distances from seed point to voxel (dist.nii).
+  4.3) Sum of speeds up to a position (vel.nii). 
+  
+./SeparateVesselRegions -v ../data/binaryVascularSystem.nii -r ../data/vesselRegions.nii -a 185 -b 267 -c 1 -d 258 -e 265 -f 1 -g 291 -h 244 -i 1 -s sep.nii -p dist.nii -u vel.nii  
+
+*Note that the vesselRegions were manually annotated previously. They could also be estimated by using an atlas.
+
+5) Generate the parameter images (A, deltaT, s, and p) and the corresponding ASL MRA set of images in the directory out.
+mkdir out
+./GenerateTheParametersAndImages -p sep.nii -d dist.nii -v vel.nii -f 10 -r 120 -l 300 -t 300 -e 900 -k 7.5 -o out/
+
+6) In order to add homomorphic noise, please refer to the repository below, by Patryk Kiepas.
+
+https://github.com/quepas/mri-homomorphic-noise-estimation
+
+7) Re-scale the images as you wish!
