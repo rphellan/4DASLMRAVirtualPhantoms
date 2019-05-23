@@ -1,4 +1,4 @@
-# 4DASLMRAVirtualPhantoms
+# 4D ASL MRA Virtual Phantoms
 
 The programs included here should be used to generate the virtual phantoms described in the paper "A methodology for generating four-dimensional arterial spin labeling MR angiography virtual phantoms".
 
